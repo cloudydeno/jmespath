@@ -42,10 +42,12 @@ export interface LexerToken {
 }
 
 export type ASTNode = SentinelNode
-| ValueNode | ValueNode<JSONValue>
+| ValueNode
+| IndexNode
 | FieldNode
 | KeyValuePairNode
-| ExpressionNode | ExpressionNode<number | null>
+| ExpressionNode
+| SliceNode
 | FunctionNode
 | ComparitorNode;
 
@@ -53,9 +55,14 @@ export interface SentinelNode {
   type: 'Identity' | Token.TOK_CURRENT;
 }
 
-export interface ValueNode<T = LexerTokenValue> {
-  type: 'Index' | 'Literal';
-  value: T;
+export interface ValueNode {
+  type: 'Literal';
+  value: LexerTokenValue;
+}
+
+export interface IndexNode {
+  type: 'Index';
+  value: number | null;
 }
 
 export interface FieldNode {
@@ -69,14 +76,20 @@ export interface KeyValuePairNode {
   value: ASTNode;
 }
 
-export interface ExpressionNode<T = ASTNode> {
-  type: "Subexpression" | "IndexExpression" | "Slice"
+export interface ExpressionNode {
+  type: "Subexpression" | "IndexExpression"
     | "Projection" | "ValueProjection" | "FilterProjection"
     | Token.TOK_FLATTEN | Token.TOK_PIPE
     | "MultiSelectList" | "MultiSelectHash"
     | "OrExpression" | "AndExpression" | "NotExpression"
     | "ExpressionReference";
-  children: T[];
+  children: ASTNode[];
+  jmespathType?: Token;
+}
+
+export interface SliceNode {
+  type: "Slice";
+  children: [number | null, number | null, number | null];
   jmespathType?: Token;
 }
 

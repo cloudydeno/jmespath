@@ -2,6 +2,8 @@ import {
   ComparitorNode,
   FunctionNode,
   ExpressionNode,
+  IndexNode,
+  SliceNode,
   ASTNode,
   FieldNode,
   KeyValuePairNode,
@@ -85,16 +87,16 @@ class TokenParser {
   }
 
   nud(token: LexerToken): ASTNode {
-    let left;
-    let right;
-    let expression;
+    let left: ASTNode;
+    let right: ASTNode;
+    let expression: ASTNode;
     switch (token.type) {
       case Token.TOK_LITERAL:
-        return { type: 'Literal', value: token.value } as ValueNode;
+        return { type: 'Literal', value: token.value };
       case Token.TOK_UNQUOTEDIDENTIFIER:
-        return { type: 'Field', name: token.value } as FieldNode;
+        return { type: 'Field', name: token.value };
       case Token.TOK_QUOTEDIDENTIFIER:
-        const node: FieldNode = { type: 'Field', name: token.value };
+        const node: ASTNode = { type: 'Field', name: token.value };
         if (this.lookahead(0) === Token.TOK_LPAREN) {
           throw new Error('Quoted identifier not allowed for function names.');
         } else {
@@ -102,21 +104,21 @@ class TokenParser {
         }
       case Token.TOK_NOT:
         right = this.expression(bindingPower.Not);
-        return { type: 'NotExpression', children: [right] } as ExpressionNode;
+        return { type: 'NotExpression', children: [right] };
       case Token.TOK_STAR:
         left = { type: 'Identity' };
         right =
           (this.lookahead(0) === Token.TOK_RBRACKET && { type: 'Identity' }) ||
           this.parseProjectionRHS(bindingPower.Star);
-        return { type: 'ValueProjection', children: [left, right] } as ExpressionNode;
+        return { type: 'ValueProjection', children: [left, right] };
       case Token.TOK_FILTER:
-        return this.led(token.type, { type: 'Identity' } as ASTNode);
+        return this.led(token.type, { type: 'Identity' });
       case Token.TOK_LBRACE:
         return this.parseMultiselectHash();
       case Token.TOK_FLATTEN:
         left = { type: Token.TOK_FLATTEN, children: [{ type: 'Identity' }] };
         right = this.parseProjectionRHS(bindingPower.Flatten);
-        return { type: 'Projection', children: [left, right] } as ExpressionNode;
+        return { type: 'Projection', children: [left, right] };
       case Token.TOK_LBRACKET:
         if (this.lookahead(0) === Token.TOK_NUMBER || this.lookahead(0) === Token.TOK_COLON) {
           right = this.parseIndexExpression();
@@ -129,14 +131,14 @@ class TokenParser {
           return {
             children: [{ type: 'Identity' }, right],
             type: 'Projection',
-          } as ExpressionNode;
+          };
         }
         return this.parseMultiselectList();
       case Token.TOK_CURRENT:
         return { type: Token.TOK_CURRENT };
       case Token.TOK_EXPREF:
         expression = this.expression(bindingPower.Expref);
-        return { type: 'ExpressionReference', children: [expression] } as ExpressionNode;
+        return { type: 'ExpressionReference', children: [expression] };
       case Token.TOK_LPAREN:
         const args: ASTNode[] = [];
         while (this.lookahead(0) !== Token.TOK_RPAREN) {
@@ -245,13 +247,13 @@ class TokenParser {
     throw error;
   }
 
-  private parseIndexExpression(): ValueNode | ExpressionNode<number | null> {
+  private parseIndexExpression(): IndexNode | SliceNode {
     if (this.lookahead(0) === Token.TOK_COLON || this.lookahead(1) === Token.TOK_COLON) {
       return this.parseSliceExpression();
     }
-    const node: ValueNode = {
+    const node: IndexNode = {
       type: 'Index',
-      value: this.lookaheadToken(0).value,
+      value: this.lookaheadToken(0).value as number,
     };
     this.advance();
     this.match(Token.TOK_RBRACKET);
@@ -269,8 +271,8 @@ class TokenParser {
     return indexExpr;
   }
 
-  private parseSliceExpression(): ExpressionNode<number | null> {
-    const parts: (number | null)[] = [null, null, null];
+  private parseSliceExpression(): SliceNode {
+    const parts: [number | null, number | null, number | null] = [null, null, null];
     let index = 0;
     let currentTokenType = this.lookahead(0);
     while (currentTokenType !== Token.TOK_RBRACKET && index < 3) {

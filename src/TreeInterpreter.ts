@@ -48,23 +48,23 @@ export class TreeInterpreter {
         }
         return null;
       case 'Subexpression':
-        result = this.visit((node as ExpressionNode).children[0], value);
+        result = this.visit(node.children[0], value);
         for (i = 1; i < node.children.length; i += 1) {
-          result = this.visit((node as ExpressionNode).children[1], result);
+          result = this.visit(node.children[1], result);
           if (result === null) {
             return null;
           }
         }
         return result;
       case 'IndexExpression':
-        left = this.visit((node as ExpressionNode).children[0], value);
-        right = this.visit((node as ExpressionNode).children[1], left);
+        left = this.visit(node.children[0], value);
+        right = this.visit(node.children[1], left);
         return right;
       case 'Index':
         if (!Array.isArray(value)) {
           return null;
         }
-        let index = (node as ValueNode<number>).value;
+        let index = node.value ?? 0;
         if (index < 0) {
           index = value.length + index;
         }
@@ -77,7 +77,7 @@ export class TreeInterpreter {
         if (!Array.isArray(value)) {
           return null;
         }
-        const sliceParams = [...(node as ExpressionNode<number>).children];
+        const sliceParams = [...node.children];
         const computed = this.computeSliceParams(value.length, sliceParams);
         const [start, stop, step] = computed;
         result = [];
@@ -92,47 +92,47 @@ export class TreeInterpreter {
         }
         return result;
       case 'Projection':
-        base = this.visit((node as ExpressionNode).children[0], value);
+        base = this.visit(node.children[0], value);
         if (!Array.isArray(base)) {
           return null;
         }
         collected = [];
         for (i = 0; i < base.length; i += 1) {
-          current = this.visit((node as ExpressionNode).children[1], base[i]);
+          current = this.visit(node.children[1], base[i]);
           if (current !== null) {
             collected.push(current);
           }
         }
         return collected as JSONValue;
       case 'ValueProjection':
-        base = this.visit((node as ExpressionNode).children[0], value);
+        base = this.visit(node.children[0], value);
         if (!isObject(base)) {
           return null;
         }
         collected = [];
         const values = Object.values(base);
         for (i = 0; i < values.length; i += 1) {
-          current = this.visit((node as ExpressionNode).children[1], values[i]);
+          current = this.visit(node.children[1], values[i]);
           if (current !== null) {
             collected.push(current);
           }
         }
         return collected as JSONValue;
       case 'FilterProjection':
-        base = this.visit((node as ExpressionNode).children[0], value);
+        base = this.visit(node.children[0], value);
         if (!Array.isArray(base)) {
           return null;
         }
         const filtered = [];
         const finalResults = [];
         for (i = 0; i < base.length; i += 1) {
-          matched = this.visit((node as ExpressionNode).children[2], base[i]);
+          matched = this.visit(node.children[2], base[i]);
           if (!isFalse(matched)) {
             filtered.push(base[i]);
           }
         }
         for (let j = 0; j < filtered.length; j += 1) {
-          current = this.visit((node as ExpressionNode).children[1], filtered[j]);
+          current = this.visit(node.children[1], filtered[j]);
           if (current !== null) {
             finalResults.push(current);
           }
@@ -165,7 +165,7 @@ export class TreeInterpreter {
         }
         return result;
       case Token.TOK_FLATTEN:
-        const original = this.visit((node as ExpressionNode).children[0], value);
+        const original = this.visit(node.children[0], value);
         if (!Array.isArray(original)) {
           return null;
         }
@@ -186,8 +186,8 @@ export class TreeInterpreter {
           return null;
         }
         collected = [];
-        for (i = 0; i < (node as ExpressionNode).children.length; i += 1) {
-          collected.push(this.visit((node as ExpressionNode).children[i], value));
+        for (i = 0; i < node.children.length; i += 1) {
+          collected.push(this.visit(node.children[i], value));
         }
         return collected as JSONValue;
       case 'MultiSelectHash':
@@ -195,33 +195,34 @@ export class TreeInterpreter {
           return null;
         }
         let collectedObj: {[key: string]: JSONValue} = {};
-        let child: KeyValuePairNode;
-        for (i = 0; i < (node as ExpressionNode).children.length; i += 1) {
-          child = (node as ExpressionNode<KeyValuePairNode>).children[i];
-          collectedObj[child.name as string] = this.visit(child.value, value) as JSONValue;
+        for (i = 0; i < node.children.length; i += 1) {
+          const child = node.children[i];
+          if (child.type === 'KeyValuePair') {
+            collectedObj[child.name as string] = this.visit(child.value, value) as JSONValue;
+          }
         }
         return collectedObj;
       case 'OrExpression':
-        matched = this.visit((node as ExpressionNode).children[0], value);
+        matched = this.visit(node.children[0], value);
         if (isFalse(matched)) {
-          matched = this.visit((node as ExpressionNode).children[1], value);
+          matched = this.visit(node.children[1], value);
         }
         return matched;
       case 'AndExpression':
-        first = this.visit((node as ExpressionNode).children[0], value);
+        first = this.visit(node.children[0], value);
 
         if (isFalse(first)) {
           return first;
         }
-        return this.visit((node as ExpressionNode).children[1], value);
+        return this.visit(node.children[1], value);
       case 'NotExpression':
-        first = this.visit((node as ExpressionNode).children[0], value);
+        first = this.visit(node.children[0], value);
         return isFalse(first);
       case 'Literal':
-        return (node as ValueNode<JSONValue>).value;
+        return node.value;
       case Token.TOK_PIPE:
-        left = this.visit((node as ExpressionNode).children[0], value);
-        return this.visit((node as ExpressionNode).children[1], left);
+        left = this.visit(node.children[0], value);
+        return this.visit(node.children[1], left);
       case Token.TOK_CURRENT:
         return value;
       case 'Function':
@@ -239,7 +240,7 @@ export class TreeInterpreter {
     }
   }
 
-  computeSliceParams(arrayLength: number, sliceParams: number[]): number[] {
+  computeSliceParams(arrayLength: number, sliceParams: (number | null)[]): number[] {
     let [start, stop, step] = sliceParams;
     if (step === null) {
       step = 1;
