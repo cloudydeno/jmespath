@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import { readdirSync, statSync, readFileSync } from 'fs';
-import { basename } from 'path';
-import { search } from '../src';
+import { search } from '../src/index.ts';
+
+import { basename, join } from 'https://deno.land/std@0.71.0/path/mod.ts';
+import { describe, it, expect, each } from './deno-shim.js';
 
 // Compliance tests that aren't supported yet.
 const notImplementedYet = [];
@@ -10,10 +11,10 @@ function endsWith(str, suffix) {
   return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
 
-const listing = readdirSync('test/compliance');
-for (let i = 0; i < listing.length; i++) {
-  const filename = 'test/compliance/' + listing[i];
-  if (statSync(filename).isFile() && endsWith(filename, '.json') && !notImplementedYet.includes(basename(filename))) {
+const listing = Deno.readDirSync(join('test', 'compliance'));
+for (const entry of listing) {
+  const filename = join('test', 'compliance', entry.name);
+  if (entry.isFile && endsWith(filename, '.json') && !notImplementedYet.includes(basename(filename))) {
     addTestSuitesFromFile(filename);
   }
 }
@@ -24,14 +25,13 @@ for (let i = 0; i < listing.length; i++) {
  */
 function addTestSuitesFromFile(filename) {
   describe(filename, () => {
-    const spec = JSON.parse(readFileSync(filename, 'utf-8'));
+    const spec = JSON.parse(Deno.readTextFileSync(filename));
     for (let i = 0; i < spec.length; i++) {
-      const msg = `suite ${i} for filename ${filename}`;
+      const msg = `suite ${i}`;
       describe(msg, () => {
         const given = spec[i].given;
-        const cases = spec[i].cases.map(c => [c.expression, c.result, c.error]);
 
-        test.each(cases)('should pass test %# %s', (expression, result, error) => {
+        each(spec[i].cases, titleFunc, ({expression, result, error}) => {
           if (error !== undefined) {
             expect(() => search(given, expression)).toThrow(error);
           } else {
@@ -41,4 +41,9 @@ function addTestSuitesFromFile(filename) {
       });
     }
   });
+}
+
+// wrapper to reduce code impact from rehighlighting
+function titleFunc({comment}) {
+  return `should pass case` + (comment ? ` '${comment}'` : '');
 }

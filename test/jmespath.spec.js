@@ -1,5 +1,7 @@
-import jmespath, { search, tokenize, compile, registerFunction, TreeInterpreter } from '../src';
-import { strictDeepEqual } from '../src/utils';
+import jmespath, { search, tokenize, compile, registerFunction, TreeInterpreter } from '../src/index.ts';
+import { strictDeepEqual } from '../src/utils/index.ts';
+
+import { describe, it, expect } from './deno-shim.js';
 
 describe('tokenize', () => {
   it('should tokenize unquoted identifier', () => {
