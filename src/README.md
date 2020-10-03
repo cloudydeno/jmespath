@@ -1,47 +1,20 @@
-![Test CI](https://github.com/danopia/deno-jmespath/workflows/Deno%20CI/badge.svg?branch=main)
+# jmespath
 
-# deno.land/x/jmespath
-
-A jmespath-ts fork, repackaged and ported to Deno.
-The `src/` directory is published to deno.land.
-The `test/` directory contains the upstream unit tests.
-All other files and directories are unused leftovers from upstream.
-
-This library should be useful for JSON-heavy APIs such as AWS.
-
-In the process of porting,
-I changed the AST types to leverage descriminated unions,
-in order to reduce usage of casts and any.
-The original library used a tsconfig to disable some implicit-any checks
-which isn't acceptable in deno libraries.
-
-
-# Original README below
-
-@metrichor/jmespath is a **typescript** implementation of the [JMESPath](https://jmespath.org) spec.
+This is a TypeScript implementation of the [JMESPath](https://jmespath.org) spec,
+ported to the Deno runtime.
+The original TypeScript implementation comes from
+[nanoporetech/jmespath-ts](https://github.com/nanoporetech/jmespath-ts).
 
 JMESPath is a query language for JSON. It will take a JSON document
 as input and transform it into another JSON document
 given a JMESPath expression.
-
-## INSTALLATION
-
-```
-npm install @metrichor/jmespath
-```
 
 ## USAGE
 
 ### `search(data: JSONValue, expression: string): JSONValue`
 
 ```javascript
-/* using ES modules */
-import { search } from '@metrichor/jmespath';
-
-
-/* using CommonJS modules */
-const search = require('@metrichor/jmespath').search;
-
+import { search } from "https://deno.land/x/jmespath/index.ts";
 
 search({foo: {bar: {baz: [0, 1, 2, 3, 4]}}}, "foo.bar.baz[2]")
 
@@ -58,7 +31,7 @@ The JMESPath language can do *a lot* more than select an element
 from a list.  Here are a few more examples:
 
 ```javascript
-import { search } from '@metrichor/jmespath';
+import { search } from "https://deno.land/x/jmespath/index.ts";
 
 /* --- EXAMPLE 1 --- */
 
@@ -109,7 +82,7 @@ search(JSON_DOCUMENT, "foo[?age > `30`]");
 Extend the list of built in JMESpath expressions with your own functions.
 
 ```javascript
-  import {search, registerFunction, TYPE_NUMBER} from '@metrichor/jmespath'
+  import {search, registerFunction, TYPE_NUMBER} from "https://deno.land/x/jmespath/index.ts";
 
 
   search({ foo: 60, bar: 10 }, 'divide(foo, bar)')
@@ -136,7 +109,7 @@ function takes a JMESPath expression and returns an abstract syntax tree that
 can be used by the TreeInterpreter function
 
 ```javascript
-import { compile, TreeInterpreter } from '@metrichor/jmespath';
+import { compile, TreeInterpreter } from "https://deno.land/x/jmespath/index.ts";
 
 const ast = compile('foo.bar');
 
@@ -160,3 +133,8 @@ check out the [JMESPath libraries page](http://jmespath.org/libraries.html).
 
 And finally, the full JMESPath specification can be found
 on the [JMESPath site](http://jmespath.org/specification.html).
+
+
+## License
+
+jmespath-ts is licensed under the Mozilla Public License Version 2.0
