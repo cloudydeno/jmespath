@@ -1,15 +1,15 @@
 import {
   Token,
-  ExpressionNodeTree,
+  ASTNode,
   FieldNode,
   ExpressionNode,
   ValueNode,
   ComparitorNode,
   KeyValuePairNode,
-} from './Lexer';
-import { isFalse, isObject, strictDeepEqual } from './utils';
-import { Runtime } from './Runtime';
-import { JSONValue } from '.';
+} from './Lexer.ts';
+import { isFalse, isObject, strictDeepEqual } from './utils/index.ts';
+import { Runtime } from './Runtime.ts';
+import type { JSONValue, JSONObject } from './index.ts';
 
 export class TreeInterpreter {
   runtime: Runtime;
@@ -18,11 +18,11 @@ export class TreeInterpreter {
     this.runtime = new Runtime(this);
   }
 
-  search(node: ExpressionNodeTree, value: JSONValue): JSONValue {
+  search(node: ASTNode, value: JSONValue): JSONValue {
     return this.visit(node, value) as JSONValue;
   }
 
-  visit(node: ExpressionNodeTree, value: JSONValue | ExpressionNodeTree): JSONValue | ExpressionNodeTree {
+  visit(node: ASTNode, value: JSONValue | ASTNode): JSONValue | ASTNode {
     let matched;
     let current;
     let result;
@@ -40,7 +40,7 @@ export class TreeInterpreter {
           return null;
         }
         if (isObject(value)) {
-          field = value[(node as FieldNode).name as string];
+          field = value[node.name as string];
           if (field === undefined) {
             return null;
           }
@@ -49,7 +49,7 @@ export class TreeInterpreter {
         return null;
       case 'Subexpression':
         result = this.visit((node as ExpressionNode).children[0], value);
-        for (i = 1; i < (node as ExpressionNode).children.length; i += 1) {
+        for (i = 1; i < node.children.length; i += 1) {
           result = this.visit((node as ExpressionNode).children[1], result);
           if (result === null) {
             return null;
@@ -139,9 +139,9 @@ export class TreeInterpreter {
         }
         return finalResults as JSONValue;
       case 'Comparator':
-        first = this.visit((node as ExpressionNode).children[0], value);
-        second = this.visit((node as ExpressionNode).children[1], value);
-        switch ((node as ComparitorNode).name) {
+        first = this.visit(node.children[0], value);
+        second = this.visit(node.children[1], value);
+        switch (node.name) {
           case Token.TOK_EQ:
             result = strictDeepEqual(first, second);
             break;
@@ -161,7 +161,7 @@ export class TreeInterpreter {
             result = (first as number) <= (second as number);
             break;
           default:
-            throw new Error(`Unknown comparator: ${(node as ComparitorNode).name}`);
+            throw new Error(`Unknown comparator: ${node.name}`);
         }
         return result;
       case Token.TOK_FLATTEN:
@@ -194,13 +194,13 @@ export class TreeInterpreter {
         if (value === null) {
           return null;
         }
-        collected = {};
+        let collectedObj: {[key: string]: JSONValue} = {};
         let child: KeyValuePairNode;
         for (i = 0; i < (node as ExpressionNode).children.length; i += 1) {
           child = (node as ExpressionNode<KeyValuePairNode>).children[i];
-          collected[child.name as string] = this.visit(child.value, value);
+          collectedObj[child.name as string] = this.visit(child.value, value) as JSONValue;
         }
-        return collected;
+        return collectedObj;
       case 'OrExpression':
         matched = this.visit((node as ExpressionNode).children[0], value);
         if (isFalse(matched)) {
@@ -226,12 +226,12 @@ export class TreeInterpreter {
         return value;
       case 'Function':
         const resolvedArgs: JSONValue[] = [];
-        for (let j = 0; j < (node as ExpressionNode).children.length; j += 1) {
-          resolvedArgs.push(this.visit((node as ExpressionNode).children[j], value) as JSONValue);
+        for (let j = 0; j < node.children.length; j += 1) {
+          resolvedArgs.push(this.visit(node.children[j], value) as JSONValue);
         }
-        return this.runtime.callFunction((node as FieldNode).name as string, resolvedArgs) as JSONValue;
+        return this.runtime.callFunction(node.name as string, resolvedArgs) as JSONValue;
       case 'ExpressionReference':
-        const refNode = (node as ExpressionNode).children[0] as ExpressionNode;
+        const refNode = node.children[0] as ExpressionNode;
         refNode.jmespathType = Token.TOK_EXPREF;
         return refNode;
       default:

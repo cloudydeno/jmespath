@@ -1,10 +1,10 @@
-import Parser from './Parser';
-import Lexer from './Lexer';
-import TreeInterpreterInst from './TreeInterpreter';
-import { ExpressionNodeTree, LexerToken } from './Lexer';
-import { InputArgument, RuntimeFunction, InputSignature } from './Runtime';
+import Parser from './Parser.ts';
+import Lexer from './Lexer.ts';
+import TreeInterpreterInst from './TreeInterpreter.ts';
+import type { ASTNode, LexerToken } from './Lexer.ts';
+import { InputArgument, RuntimeFunction, InputSignature } from './Runtime.ts';
 
-export type { FunctionSignature, RuntimeFunction, InputSignature } from './Runtime';
+export type { FunctionSignature, RuntimeFunction, InputSignature } from './Runtime.ts';
 export type ObjectDict<T = unknown> = Record<string, T | undefined>;
 
 export type JSONPrimitive = string | number | boolean | null;
@@ -23,7 +23,7 @@ export const TYPE_NUMBER = InputArgument.TYPE_NUMBER;
 export const TYPE_OBJECT = InputArgument.TYPE_OBJECT;
 export const TYPE_STRING = InputArgument.TYPE_STRING;
 
-export function compile(expression: string): ExpressionNodeTree {
+export function compile(expression: string): ASTNode {
   const nodeTree = Parser.parse(expression);
   return nodeTree;
 }

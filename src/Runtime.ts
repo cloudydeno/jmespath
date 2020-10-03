@@ -1,8 +1,8 @@
-import { TreeInterpreter } from './TreeInterpreter';
-import { Token, ExpressionNode } from './Lexer';
+import type { TreeInterpreter } from './TreeInterpreter.ts';
+import { Token, ExpressionNode } from './Lexer.ts';
 
-import { isObject } from './utils';
-import { JSONValue, JSONObject, JSONArray, ObjectDict } from '.';
+import { isObject } from './utils/index.ts';
+import type { JSONValue, JSONObject, JSONArray, ObjectDict } from './index.ts';
 
 export enum InputArgument {
   TYPE_NUMBER = 0,
