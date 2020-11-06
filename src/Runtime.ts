@@ -20,6 +20,7 @@ export enum InputArgument {
 export interface InputSignature {
   types: InputArgument[];
   variadic?: boolean;
+  optional?: boolean;
 }
 
 export type RuntimeFunction<T, U> = (resolvedArgs: T) => U;
@@ -71,25 +72,33 @@ export class Runtime {
     return functionEntry._func.call(this, resolvedArgs);
   }
 
+  private validateInputSignatures(name: string, signature: InputSignature[]): void {
+    for (let i = 0; i < signature.length; i += 1) {
+      if ('variadic' in signature[i] && i !== signature.length - 1) {
+        throw new Error(`ArgumentError: ${name}() 'variadic' argument ${i + 1} must occur last`);
+      }
+    }
+  }
+
   private validateArgs(name: string, args: any[], signature: InputSignature[]): void {
     let pluralized: boolean;
-    if (signature[signature.length - 1].variadic) {
-      if (args.length < signature.length) {
-        pluralized = signature.length > 1;
-        throw new Error(
-          `ArgumentError: ${name}() takes at least ${signature.length} argument${
-            (pluralized && 's') || ''
-          } but received ${args.length}`,
-        );
-      }
-    } else if (args.length !== signature.length) {
+    this.validateInputSignatures(name, signature);
+    const numberOfRequiredArgs = signature.filter(argSignature => !argSignature.optional ?? false).length;
+    const lastArgIsVariadic = signature[signature.length - 1]?.variadic ?? false;
+    const tooFewArgs = args.length < numberOfRequiredArgs;
+    const tooManyArgs = args.length > signature.length;
+    const tooFewModifier =
+      tooFewArgs && ((!lastArgIsVariadic && numberOfRequiredArgs > 1) || lastArgIsVariadic) ? 'at least ' : '';
+
+    if ((lastArgIsVariadic && tooFewArgs) || (!lastArgIsVariadic && (tooFewArgs || tooManyArgs))) {
       pluralized = signature.length > 1;
       throw new Error(
-        `ArgumentError: ${name}() takes ${signature.length} argument${(pluralized && 's') || ''} but received ${
-          args.length
-        }`,
+        `ArgumentError: ${name}() takes ${tooFewModifier}${numberOfRequiredArgs} argument${
+          (pluralized && 's') || ''
+        } but received ${args.length}`,
       );
     }
+
     let currentSpec: InputArgument[];
     let actualType: InputArgument;
     let typeMatched: boolean;
@@ -104,7 +113,7 @@ export class Runtime {
           break;
         }
       }
-      if (!typeMatched) {
+      if (!typeMatched && actualType !== undefined) {
         const expected = currentSpec
           .map((typeIdentifier): string => {
             return this.TYPE_NAME_TABLE[typeIdentifier];

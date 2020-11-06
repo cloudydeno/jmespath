@@ -13,12 +13,14 @@ import type { JSONValue, JSONObject } from './index.ts';
 
 export class TreeInterpreter {
   runtime: Runtime;
+  private _rootValue: JSONValue | null = null;
 
   constructor() {
     this.runtime = new Runtime(this);
   }
 
   search(node: ASTNode, value: JSONValue): JSONValue {
+    this._rootValue = value;
     return this.visit(node, value) as JSONValue;
   }
 
@@ -225,6 +227,8 @@ export class TreeInterpreter {
         return this.visit(node.children[1], left);
       case Token.TOK_CURRENT:
         return value;
+      case Token.TOK_ROOT:
+        return this._rootValue;
       case 'Function':
         const resolvedArgs: JSONValue[] = [];
         for (let j = 0; j < node.children.length; j += 1) {
