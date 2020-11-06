@@ -12,6 +12,7 @@ export enum Token {
   TOK_RBRACE = 'Rbrace',
   TOK_NUMBER = 'Number',
   TOK_CURRENT = 'Current',
+  TOK_ROOT = 'Root',
   TOK_EXPREF = 'Expref',
   TOK_PIPE = 'Pipe',
   TOK_OR = 'Or',
@@ -52,7 +53,7 @@ export type ASTNode = SentinelNode
 | ComparitorNode;
 
 export interface SentinelNode {
-  type: 'Identity' | Token.TOK_CURRENT;
+  type: 'Identity' | Token.TOK_CURRENT | Token.TOK_ROOT;
 }
 
 export interface ValueNode {
@@ -115,6 +116,7 @@ export const basicTokens: {[key: string]: Token} = {
   '.': Token.TOK_DOT,
   ':': Token.TOK_COLON,
   '@': Token.TOK_CURRENT,
+  ['$']: Token.TOK_ROOT,
   ']': Token.TOK_RBRACKET,
   '{': Token.TOK_LBRACE,
   '}': Token.TOK_RBRACE,
