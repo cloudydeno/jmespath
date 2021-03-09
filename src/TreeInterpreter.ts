@@ -1,15 +1,16 @@
-import {
-  Token,
-  ASTNode,
+import type {
+  ExpressionNodeTree,
   FieldNode,
   ExpressionNode,
   ValueNode,
   ComparitorNode,
   KeyValuePairNode,
+  ASTNode,
 } from './Lexer.ts';
 import { isFalse, isObject, strictDeepEqual } from './utils/index.ts';
+import { Token } from './Lexer.ts';
 import { Runtime } from './Runtime.ts';
-import type { JSONValue, JSONObject } from './index.ts';
+import type { JSONValue } from './index.ts';
 
 export class TreeInterpreter {
   runtime: Runtime;

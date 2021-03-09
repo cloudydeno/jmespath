@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { search } from '../src/index.ts';
 
 import { basename, join } from 'https://deno.land/std@0.71.0/path/mod.ts';

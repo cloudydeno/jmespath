@@ -4,16 +4,15 @@ import {
   ExpressionNode,
   IndexNode,
   SliceNode,
-  ASTNode,
   FieldNode,
   KeyValuePairNode,
   LexerToken,
   ValueNode,
-  Token,
+  ASTNode,
 } from './Lexer.ts';
-import Lexer from './Lexer.ts';
+import Lexer, { Token } from './Lexer.ts';
 
-const bindingPower: { [token: string]: number } = {
+const bindingPower: Record<string, number> = {
   [Token.TOK_EOF]: 0,
   [Token.TOK_UNQUOTEDIDENTIFIER]: 0,
   [Token.TOK_QUOTEDIDENTIFIER]: 0,

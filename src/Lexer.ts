@@ -34,7 +34,7 @@ export enum Token {
   TOK_LITERAL = 'Literal',
 }
 
-export type LexerTokenValue = string | number | JSONValue;
+export type LexerTokenValue = JSONValue;
 
 export interface LexerToken {
   type: Token;
@@ -108,7 +108,9 @@ export interface ComparitorNode<T = ASTNode> {
   jmespathType?: Token;
 }
 
-export const basicTokens: {[key: string]: Token} = {
+export type ExpressionNodeTree = ASTNode | ExpressionNode | FieldNode | ValueNode;
+
+export const basicTokens: Record<string, Token> = {
   '(': Token.TOK_LPAREN,
   ')': Token.TOK_RPAREN,
   '*': Token.TOK_STAR,
@@ -122,14 +124,14 @@ export const basicTokens: {[key: string]: Token} = {
   '}': Token.TOK_RBRACE,
 };
 
-const operatorStartToken: {[key: string]: true} = {
+const operatorStartToken: Record<string, boolean> = {
   '!': true,
   '<': true,
   '=': true,
   '>': true,
 };
 
-const skipChars: {[key: string]: true} = {
+const skipChars: Record<string, boolean> = {
   '\t': true,
   '\n': true,
   '\r': true,

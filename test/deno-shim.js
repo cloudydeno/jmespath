@@ -20,6 +20,7 @@ export function expect(actual) {
   return {
     toMatchObject(expected) { assertEquals(actual, expected) },
     toEqual(expected) { assertEquals(actual, expected) },
+    toBe(expected) { assertEquals(actual, expected) },
     toStrictEqual(expected) { assertStrictEquals(actual, expected) },
     toThrow(message) { assertThrows(actual, Error, message) },
     toContain(slice) { assertStringContains(actual, slice) },
