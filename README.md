@@ -1,4 +1,4 @@
-![Test CI](https://github.com/danopia/deno-jmespath/workflows/Deno%20CI/badge.svg?branch=main)
+![Test CI](https://github.com/danopia/deno-jmespath/workflows/CI/badge.svg?branch=main)
 
 # deno.land/x/jmespath
 

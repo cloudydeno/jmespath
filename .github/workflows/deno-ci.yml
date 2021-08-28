@@ -1,4 +1,4 @@
-name: Deno CI
+name: CI
 
 on:
   push:
@@ -6,20 +6,27 @@ on:
   pull_request: {}
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
 
-    name: Deno ${{ matrix.deno-version }}
+  check:
+    runs-on: ubuntu-latest
+    name: Check w/ ${{ matrix.deno-version }}
     strategy:
       matrix:
-        deno-version: ["v1.x", "nightly"]
+        deno-version:
+        - v1.9
+        - v1.12
+        - v1.13
+        - canary
+      fail-fast: false # run each branch to completion
 
     steps:
     - name: Checkout source
       uses: actions/checkout@v2
+
     - name: Use Deno ${{ matrix.deno-version }}
-      uses: denolib/setup-deno@v2
+      uses: denoland/setup-deno@v1
       with:
         deno-version: ${{ matrix.deno-version }}
+
     - name: Run test suite
       run: deno test --allow-read=test test/*.js

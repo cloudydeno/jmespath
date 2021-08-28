@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { search } from '../src/index.ts';
 
-import { basename, join } from 'https://deno.land/std@0.71.0/path/mod.ts';
+import { basename, join } from 'https://deno.land/std@0.105.0/path/mod.ts';
 import { describe, it, expect, each } from './deno-shim.js';
 
 // Compliance tests that aren't supported yet.

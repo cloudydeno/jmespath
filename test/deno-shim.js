@@ -1,7 +1,7 @@
 import {
   assertEquals, assertStrictEquals,
-  assertThrows, assertStringContains,
-} from "https://deno.land/std@0.71.0/testing/asserts.ts";
+  assertThrows, assertStringIncludes,
+} from "https://deno.land/std@0.105.0/testing/asserts.ts";
 
 const suiteStack = [];
 
@@ -23,7 +23,7 @@ export function expect(actual) {
     toBe(expected) { assertEquals(actual, expected) },
     toStrictEqual(expected) { assertStrictEquals(actual, expected) },
     toThrow(message) { assertThrows(actual, Error, message) },
-    toContain(slice) { assertStringContains(actual, slice) },
+    toContain(slice) { assertStringIncludes(actual, slice) },
     not: {
       toThrow() { actual() }, // the test fails if anything throws anyway...
     },
