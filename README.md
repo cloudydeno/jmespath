@@ -5,7 +5,6 @@
 A jmespath-ts fork, repackaged and ported to Deno.
 The `src/` directory is published to deno.land.
 The `test/` directory contains the upstream unit tests.
-All other files and directories are unused leftovers from upstream.
 
 This library should be useful for JSON-heavy APIs such as AWS.
 
@@ -14,6 +13,9 @@ I changed the AST types to leverage descriminated unions,
 in order to reduce usage of casts and any.
 The original library used a tsconfig to disable some implicit-any checks
 which isn't acceptable in deno libraries.
+
+Since then, upstream has also improved their typing,
+so the difference between this fork and upstream is somewhat smaller now.
 
 
 # Original README below
