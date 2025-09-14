@@ -470,7 +470,7 @@
       },
       {
         "expression": "\"foo",
-        "error": "Unexpected end of JSON input"
+        "error": "Unterminated string in JSON at position 4 (line 1 column 5)"
       }
     ]
   },
@@ -523,7 +523,7 @@
       {
         "comment": "Literal char not escaped",
         "expression": "foo[?bar==`[\"foo`bar\"]`]",
-        "error": "Unexpected end of JSON input"
+        "error": "Unterminated string in JSON at position 5 (line 1 column 6)"
       },
       {
         "comment": "Literal char escaped",

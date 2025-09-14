@@ -46,7 +46,7 @@ export const isFalse = (obj: unknown): boolean => {
   }
   if (isObject(obj)) {
     for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
+      if (Object.hasOwn(obj, key)) {
         return false;
       }
     }
