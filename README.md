@@ -1,10 +1,17 @@
-![Test CI](https://github.com/danopia/deno-jmespath/workflows/CI/badge.svg?branch=main)
+![Test CI](https://github.com/danopia/jmespath/workflows/CI/badge.svg?branch=main)
 
-# deno.land/x/jmespath
+# JSR package `@cloudydeno/jmespath`
 
-A jmespath-ts fork, repackaged and ported to Deno.
-The `src/` directory is published to deno.land.
+A jmespath-ts fork, repackaged and ported to be Deno-first.
+The `src/` directory is published [to JSR](https://jsr.io/@cloudydeno/jmespath).
 The `test/` directory contains the upstream unit tests.
+
+
+```javascript
+// deno add jsr:@cloudydeno/jmespath
+
+import { search, compile } from '@cloudydeno/jmespath';
+```
 
 This library should be useful for JSON-heavy APIs such as AWS.
 

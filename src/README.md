@@ -14,7 +14,7 @@ given a JMESPath expression.
 ### `search(data: JSONValue, expression: string): JSONValue`
 
 ```javascript
-import { search } from "https://deno.land/x/jmespath/index.ts";
+import { search } from "jsr:@cloudydeno/jmespath";
 
 search({foo: {bar: {baz: [0, 1, 2, 3, 4]}}}, "foo.bar.baz[2]")
 
@@ -31,7 +31,7 @@ The JMESPath language can do *a lot* more than select an element
 from a list.  Here are a few more examples:
 
 ```javascript
-import { search } from "https://deno.land/x/jmespath/index.ts";
+import { search } from "jsr:@cloudydeno/jmespath";
 
 /* --- EXAMPLE 1 --- */
 
@@ -82,7 +82,7 @@ search(JSON_DOCUMENT, "foo[?age > `30`]");
 Extend the list of built in JMESpath expressions with your own functions.
 
 ```javascript
-  import {search, registerFunction, TYPE_NUMBER} from "https://deno.land/x/jmespath/index.ts";
+  import {search, registerFunction, TYPE_NUMBER} from "jsr:@cloudydeno/jmespath";
 
 
   search({ foo: 60, bar: 10 }, 'divide(foo, bar)')
@@ -109,7 +109,7 @@ function takes a JMESPath expression and returns an abstract syntax tree that
 can be used by the TreeInterpreter function
 
 ```javascript
-import { compile, TreeInterpreter } from "https://deno.land/x/jmespath/index.ts";
+import { compile, TreeInterpreter } from "jsr:@cloudydeno/jmespath";
 
 const ast = compile('foo.bar');
 

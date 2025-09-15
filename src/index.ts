@@ -2,7 +2,13 @@ import Parser from './Parser.ts';
 import Lexer from './Lexer.ts';
 import TreeInterpreterInst from './TreeInterpreter.ts';
 import type { ASTNode, LexerToken } from './Lexer.ts';
-import { InputArgument, RuntimeFunction, InputSignature } from './Runtime.ts';
+import { InputArgument, type RuntimeFunction, type InputSignature } from './Runtime.ts';
+
+export {
+  type ASTNode,
+  type Token,
+  type LexerToken,
+} from './Lexer.ts';
 
 export type { FunctionSignature, RuntimeFunction, InputSignature } from './Runtime.ts';
 export type ObjectDict<T = unknown> = Record<string, T | undefined>;

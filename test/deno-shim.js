@@ -1,7 +1,7 @@
-import {
-  assertEquals, assertStrictEquals,
-  assertThrows, assertStringIncludes,
-} from "https://deno.land/std@0.140.0/testing/asserts.ts";
+import { assertEquals } from "@std/assert/equals";
+import { assertStrictEquals } from "@std/assert/strict-equals";
+import { assertThrows } from "@std/assert/throws";
+import { assertStringIncludes } from "@std/assert/string-includes";
 
 const suiteStack = [];
 
