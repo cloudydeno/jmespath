@@ -45,7 +45,7 @@ jobs:
       run: deno install || rm deno.lock
 
     - name: Run test suite
-      run: deno test --allow-read=test test/*.js
+      run: deno task test
 
   dry-run:
     runs-on: ubuntu-latest
