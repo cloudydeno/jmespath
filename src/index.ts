@@ -6,7 +6,7 @@ import { InputArgument, type RuntimeFunction, type InputSignature } from './Runt
 
 export {
   type ASTNode,
-  type Token,
+  Token,
   type LexerToken,
 } from './Lexer.ts';
 
