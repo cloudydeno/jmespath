@@ -28,7 +28,7 @@ jobs:
 
     steps:
     - name: Checkout source
-      uses: actions/checkout@v2
+      uses: actions/checkout@v5
 
     - name: Cache Deno deps
       uses: actions/cache@v4
@@ -37,7 +37,7 @@ jobs:
         key: deno/${{ matrix.deno-version }}-${{ github.sha }}
 
     - name: Use Deno ${{ matrix.deno-version }}
-      uses: denoland/setup-deno@v1
+      uses: denoland/setup-deno@v2
       with:
         deno-version: ${{ matrix.deno-version }}
 
